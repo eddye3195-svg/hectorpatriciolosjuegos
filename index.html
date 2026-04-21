@@ -1,22 +1,34 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Héctor Patricio Los Juegos</title>
+  
+  <script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
 
   <style>
+    :root {
+      --primary: #00ffcc;
+      --accent: #ff00cc;
+      --dark-panel: #1a1a2e;
+      --arcade-border: #333;
+    }
+
     body {
       margin: 0;
-      font-family: Arial;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
       background: linear-gradient(270deg, #ff00cc, #3333ff, #00ffcc);
       background-size: 600% 600%;
-      animation: fondo 10s ease infinite;
+      animation: fondoAnimado 15s ease infinite;
       color: white;
       text-align: center;
       overflow-x: hidden;
+      min-height: 100vh;
     }
 
-    @keyframes fondo {
+    @keyframes fondoAnimado {
       0% {background-position: 0% 50%;}
       50% {background-position: 100% 50%;}
       100% {background-position: 0% 50%;}
@@ -24,93 +36,137 @@
 
     h1 {
       margin-top: 20px;
-      font-size: 40px;
-      text-shadow: 0 0 15px black;
+      font-size: 45px;
+      text-shadow: 4px 4px 0px var(--dark-panel);
+      letter-spacing: 2px;
     }
 
+    /* Menú de selección */
     .menu {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, 200px);
+      display: flex;
       justify-content: center;
-      gap: 20px;
-      margin-top: 40px;
+      gap: 15px;
+      margin: 20px auto;
+      flex-wrap: wrap;
+      max-width: 900px;
     }
 
-    .juego {
-      background: rgba(255,255,255,0.2);
-      border-radius: 20px;
-      padding: 20px;
+    .juego-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid white;
+      border-radius: 12px;
+      padding: 12px 20px;
       cursor: pointer;
-      transition: 0.3s;
-      backdrop-filter: blur(10px);
+      transition: all 0.3s;
+      backdrop-filter: blur(8px);
+      font-weight: bold;
+      color: white;
+      text-decoration: none;
     }
 
-    .juego:hover {
-      transform: scale(1.1) rotate(2deg);
-      background: rgba(255,255,255,0.4);
-    }
-
-    #pantalla {
-      margin-top: 40px;
-      padding: 20px;
-      min-height: 200px;
-      animation: aparecer 0.5s;
-    }
-
-    @keyframes aparecer {
-      from {opacity: 0; transform: scale(0.8);}
-      to {opacity: 1; transform: scale(1);}
-    }
-
-    button {
-      padding: 10px 20px;
-      font-size: 18px;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      background: #00ffcc;
+    .juego-btn:hover {
+      transform: translateY(-5px);
+      background: var(--primary);
       color: black;
-      transition: 0.2s;
+      border-color: black;
     }
 
-    button:hover {
-      transform: scale(1.1);
-      background: #00ffaa;
-    }
-
-    .caja {
+    /* CONTENEDOR ARCADE (Inspirado en ESPN Arcade) */
+    #area-juego {
       margin-top: 20px;
-      padding: 20px;
-      background: rgba(0,0,0,0.3);
-      border-radius: 15px;
+      display: flex;
+      justify-content: center;
     }
 
-    /* PARTICULAS */
+    .arcade-wrapper {
+      display: flex;
+      background: var(--dark-panel);
+      padding: 20px;
+      border-radius: 25px;
+      border: 6px solid var(--arcade-border);
+      box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+      animation: aparecerArcade 0.6s ease-out;
+    }
+
+    @keyframes aparecerArcade {
+      from { opacity: 0; transform: scale(0.9) translateY(30px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    /* Panel Lateral Izquierdo */
+    .arcade-sidebar {
+      width: 90px;
+      background: #16213e;
+      border-radius: 15px;
+      margin-right: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 25px 0;
+      gap: 15px;
+      border: 2px solid rgba(255,255,255,0.05);
+    }
+
+    .control-bot-red { width: 45px; height: 45px; background: #e94560; border-radius: 50%; box-shadow: inset -4px -4px 0 rgba(0,0,0,0.4); }
+    .control-bot-green { width: 40px; height: 40px; background: #4ecca3; border-radius: 8px; box-shadow: inset -3px -3px 0 rgba(0,0,0,0.4); }
+    .control-bot-yellow { width: 40px; height: 40px; background: #fca311; border-radius: 8px; box-shadow: inset -3px -3px 0 rgba(0,0,0,0.4); }
+    
+    .d-pad {
+      width: 60px;
+      height: 60px;
+      background: #444;
+      margin-top: auto;
+      clip-path: polygon(35% 0%, 65% 0%, 65% 35%, 100% 35%, 100% 65%, 65% 65%, 65% 100%, 35% 100%, 35% 65%, 0% 65%, 0% 35%, 35% 35%);
+    }
+
+    /* Pantalla de juego */
+    .pantalla-emulador {
+      background: #000;
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #contenedor-flash {
+      width: 800px;
+      height: 600px;
+    }
+
+    /* Partículas (Tus dibujos) */
     .particula {
       position: fixed;
       background-size: cover;
       pointer-events: none;
-      opacity: 0.7;
-      animation: flotar linear infinite;
+      z-index: -1;
+      opacity: 0.6;
+      animation: lluviaParticulas linear infinite;
     }
 
-    @keyframes flotar {
-      from {
-        transform: translateY(100vh) rotate(0deg);
-      }
-      to {
-        transform: translateY(-10vh) rotate(360deg);
-      }
+    @keyframes lluviaParticulas {
+      from { transform: translateY(110vh) rotate(0deg); }
+      to { transform: translateY(-20vh) rotate(360deg); }
     }
 
-    /* CONTROL DE MUSICA */
-    .controles-musica {
+    /* Botón de Música */
+    .musica-fixed {
       position: fixed;
-      bottom: 20px;
-      right: 20px;
-      z-index: 1000;
+      bottom: 25px;
+      right: 25px;
+      z-index: 100;
     }
 
+    .btn-musica {
+      background: var(--primary);
+      color: black;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 30px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0,255,204,0.3);
+    }
   </style>
 </head>
 
@@ -123,30 +179,26 @@
   </audio>
 
   <div class="menu">
-    <div class="juego" onclick="abrirJuego('minejamin')">
-      ⛏️ Minejamin
-    </div>
-
-    <div class="juego" onclick="abrirJuego('papa')">
-      👨 Papá del Seba
-    </div>
+    <div class="juego-btn" onclick="abrirJuego('minejamin')">⛏️ Minejamin</div>
+    <div class="juego-btn" onclick="abrirJuego('papa')">👨 Papá del Seba</div>
+    <div class="juego-btn" onclick="abrirJuego('pvz')">🧟 Plants vs Zombies</div>
   </div>
 
-  <div id="pantalla">
-    <p>Selecciona un juego 👆</p>
+  <div id="area-juego">
+    <p style="background: rgba(0,0,0,0.4); padding: 30px; border-radius: 20px; border: 1px dashed white;">
+      ¡Bienvenido! Haz clic en un juego arriba para empezar. 🕹️
+    </p>
   </div>
 
-  <div class="controles-musica">
-    <button onclick="toggleMusica()" id="btnMusica">🎵 Play Música</button>
+  <div class="musica-fixed">
+    <button class="btn-musica" onclick="toggleMusica()" id="btnMusica">🎵 Play Música</button>
   </div>
 
   <script>
-    let puntos = 0;
     const musica = document.getElementById("musicaFondo");
     const btnMusica = document.getElementById("btnMusica");
     let sonando = false;
 
-    // Función para Play/Pausa
     function toggleMusica() {
       if (sonando) {
         musica.pause();
@@ -159,79 +211,84 @@
     }
 
     function abrirJuego(juego) {
-      // Iniciar música automáticamente al abrir un juego si no está sonando
-      if (!sonando) {
-        toggleMusica();
-      }
+      if (!sonando) toggleMusica();
+      const area = document.getElementById("area-juego");
 
-      const pantalla = document.getElementById("pantalla");
+      // Construcción de la interfaz Arcade
+      let htmlArcade = `
+        <div class="arcade-wrapper">
+          <div class="arcade-sidebar">
+            <div class="control-bot-red"></div>
+            <div class="control-bot-green"></div>
+            <div class="control-bot-yellow"></div>
+            <div class="d-pad"></div>
+          </div>
+          <div class="pantalla-emulador">
+      `;
 
       if (juego === "minejamin") {
-        puntos = 0;
-        pantalla.innerHTML = `
-          <div class="caja">
-            <h2>⛏️ Minejamin</h2>
-            <p>Rompe bloques</p>
-            <h1 id="puntos">0</h1>
-            <button onclick="minar()">Minar ⛏️</button>
-          </div>
-        `;
+        htmlArcade += `
+          <div style="width:800px; height:600px; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#111;">
+            <h2>⛏️ MINEJAMIN</h2>
+            <h1 id="puntos" style="font-size:80px; color:var(--primary)">0</h1>
+            <button class="juego-btn" onclick="minar()">¡Picar bloque!</button>
+          </div>`;
+      } else if (juego === "papa") {
+        htmlArcade += `
+          <div style="width:800px; height:600px; background:#222; position:relative;">
+            <h2 style="margin-top:20px;">👨 ¿Dónde está el papá del Seba?</h2>
+            <button id="botonPapa" class="juego-btn" style="position:absolute; top:50%; left:50%;" onmouseover="escapar()">¡ATRÁPALO!</button>
+          </div>`;
+      } else if (juego === "pvz") {
+        htmlArcade += `<div id="contenedor-flash"></div>`;
       }
 
-      if (juego === "papa") {
-        pantalla.innerHTML = `
-          <div class="caja">
-            <h2>👨 Papá del Seba</h2>
-            <p>¡Atrápalo si puedes!</p>
-            <button id="botonPapa" onmouseover="escapar()">Atrapar 😆</button>
-            <p id="estado"></p>
-          </div>
-        `;
+      htmlArcade += `</div></div>`;
+      area.innerHTML = htmlArcade;
+
+      // Cargar PVZ si es el elegido
+      if (juego === "pvz") {
+        const ruffle = window.RufflePlayer.newest();
+        const player = ruffle.createPlayer();
+        const container = document.getElementById("contenedor-flash");
+        container.appendChild(player);
+        
+        // Carga el archivo pvz.swf de tu repositorio
+        player.load("pvz.swf").catch((err) => {
+          console.error(err);
+          alert("Asegúrate de haber subido el archivo pvz.swf a tu GitHub.");
+        });
       }
     }
 
+    // Funciones de los mini-juegos
     function minar() {
-      puntos++;
-      document.getElementById("puntos").innerText = puntos;
+      const p = document.getElementById("puntos");
+      p.innerText = parseInt(p.innerText) + 1;
     }
 
     function escapar() {
-      const boton = document.getElementById("botonPapa");
-      const x = Math.random() * (window.innerWidth - 100);
-      const y = Math.random() * (window.innerHeight - 100);
-
-      boton.style.position = "absolute";
-      boton.style.left = x + "px";
-      boton.style.top = y + "px";
-
-      document.getElementById("estado").innerText = "😆 Se escapó!";
+      const btn = document.getElementById("botonPapa");
+      btn.style.left = Math.random() * 80 + "%";
+      btn.style.top = Math.random() * 80 + "%";
     }
 
-    /* PARTICULAS */
-    const imagenParticula = "https://i.imgur.com/4NZ6uLY.png"; 
-
+    // Sistema de partículas (Bocetos)
+    const urlImagen = "https://i.imgur.com/4NZ6uLY.png"; 
     function crearParticula() {
       const p = document.createElement("div");
-      p.classList.add("particula");
-      p.style.backgroundImage = `url(${imagenParticula})`;
-      p.style.left = Math.random() * window.innerWidth + "px";
-
-      const size = Math.random() * 40 + 20;
-      p.style.width = size + "px";
-      p.style.height = size + "px";
-
-      const duracion = Math.random() * 5 + 5;
-      p.style.animationDuration = duracion + "s";
-
+      p.className = "particula";
+      p.style.backgroundImage = `url(${urlImagen})`;
+      p.style.left = Math.random() * 100 + "vw";
+      const tamano = Math.random() * 35 + 25;
+      p.style.width = tamano + "px";
+      p.style.height = tamano + "px";
+      p.style.animationDuration = (Math.random() * 5 + 5) + "s";
       document.body.appendChild(p);
-
-      setTimeout(() => {
-        p.remove();
-      }, duracion * 1000);
+      setTimeout(() => p.remove(), 10000);
     }
+    setInterval(crearParticula, 500);
 
-    setInterval(crearParticula, 300);
   </script>
-
 </body>
 </html>
