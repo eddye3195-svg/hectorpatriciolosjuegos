@@ -103,12 +103,24 @@
       }
     }
 
+    /* CONTROL DE MUSICA */
+    .controles-musica {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+
   </style>
 </head>
 
 <body>
 
   <h1>🎮 Héctor Patricio Los Juegos</h1>
+
+  <audio id="musicaFondo" loop>
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+  </audio>
 
   <div class="menu">
     <div class="juego" onclick="abrirJuego('minejamin')">
@@ -124,10 +136,34 @@
     <p>Selecciona un juego 👆</p>
   </div>
 
+  <div class="controles-musica">
+    <button onclick="toggleMusica()" id="btnMusica">🎵 Play Música</button>
+  </div>
+
   <script>
     let puntos = 0;
+    const musica = document.getElementById("musicaFondo");
+    const btnMusica = document.getElementById("btnMusica");
+    let sonando = false;
+
+    // Función para Play/Pausa
+    function toggleMusica() {
+      if (sonando) {
+        musica.pause();
+        btnMusica.innerText = "🎵 Play Música";
+      } else {
+        musica.play();
+        btnMusica.innerText = "⏸️ Pausar";
+      }
+      sonando = !sonando;
+    }
 
     function abrirJuego(juego) {
+      // Iniciar música automáticamente al abrir un juego si no está sonando
+      if (!sonando) {
+        toggleMusica();
+      }
+
       const pantalla = document.getElementById("pantalla");
 
       if (juego === "minejamin") {
@@ -161,7 +197,6 @@
 
     function escapar() {
       const boton = document.getElementById("botonPapa");
-
       const x = Math.random() * (window.innerWidth - 100);
       const y = Math.random() * (window.innerHeight - 100);
 
@@ -173,14 +208,12 @@
     }
 
     /* PARTICULAS */
-    const imagenParticula = "https://i.imgur.com/4NZ6uLY.png"; // 👈 CAMBIA ESTA URL
+    const imagenParticula = "https://i.imgur.com/4NZ6uLY.png"; 
 
     function crearParticula() {
       const p = document.createElement("div");
       p.classList.add("particula");
-
       p.style.backgroundImage = `url(${imagenParticula})`;
-
       p.style.left = Math.random() * window.innerWidth + "px";
 
       const size = Math.random() * 40 + 20;
