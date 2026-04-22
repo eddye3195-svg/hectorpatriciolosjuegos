@@ -2,32 +2,75 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Héctor Patricio Los Juegos</title>
+  <title>Héctor Patricio Los Juegos - PLAN B</title>
+  
   <script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
+
   <style>
+    :root { --primary: #00ffcc; --dark: #1a1a2e; }
     body {
-      margin: 0; background: linear-gradient(270deg, #ff00cc, #3333ff, #00ffcc);
+      margin: 0; padding: 0; font-family: 'Arial Black', sans-serif;
+      background: linear-gradient(270deg, #ff00cc, #3333ff, #00ffcc);
       background-size: 600% 600%; animation: fondo 15s ease infinite;
-      color: white; text-align: center; font-family: sans-serif;
+      color: white; text-align: center; overflow-x: hidden;
     }
     @keyframes fondo { 0% {background-position: 0% 50%;} 50% {background-position: 100% 50%;} 100% {background-position: 0% 50%;} }
-    .menu { display: flex; justify-content: center; gap: 15px; margin: 20px; }
-    .juego-btn { background: rgba(255,255,255,0.2); border: 2px solid white; border-radius: 10px; padding: 10px 20px; color: white; cursor: pointer; font-weight: bold; }
-    #area-juego { display: flex; justify-content: center; margin-top: 20px; }
-    .arcade-frame { display: flex; background: #1a1a2e; padding: 20px; border-radius: 20px; border: 5px solid #333; }
-    .sidebar { width: 80px; background: #0f3460; border-radius: 10px; margin-right: 15px; display: flex; flex-direction: column; align-items: center; padding: 20px 0; gap: 20px; }
-    .bot { width: 40px; height: 40px; border-radius: 5px; background: #e94560; }
-    .game-screen { background: #000; width: 950px; height: 720px; display: flex; align-items: center; justify-content: center; }
+    
+    h1 { margin-top: 20px; font-size: clamp(24px, 5vw, 45px); text-shadow: 4px 4px 0px #000; }
+
+    .menu { display: flex; justify-content: center; gap: 10px; margin: 20px; flex-wrap: wrap; }
+    .juego-btn {
+      background: rgba(255, 255, 255, 0.2); border: 3px solid white; border-radius: 12px;
+      padding: 10px 20px; color: white; cursor: pointer; font-weight: bold; transition: 0.3s;
+    }
+    .juego-btn:hover { background: var(--primary); color: black; transform: scale(1.05); }
+
+    /* CONTENEDOR ARCADE MEJORADO */
+    #area-juego { margin: 10px auto; display: flex; justify-content: center; width: 95%; }
+    .arcade-frame {
+      display: flex; background: var(--dark); padding: 15px; border-radius: 25px;
+      border: 6px solid #222; box-shadow: 0 20px 60px rgba(0,0,0,0.8); width: 100%; max-width: 1100px;
+    }
+
+    .sidebar {
+      width: 70px; background: #0f3460; border-radius: 15px; margin-right: 15px;
+      display: flex; flex-direction: column; align-items: center; padding: 20px 0; gap: 15px;
+    }
+    .bot-r { width: 40px; height: 40px; background: #e94560; border-radius: 50%; }
+    .bot-v { width: 35px; height: 35px; background: #4ecca3; border-radius: 8px; }
+    .bot-a { width: 35px; height: 35px; background: #fca311; border-radius: 8px; }
+
+    /* PANTALLA ADAPTATIVA */
+    .game-screen {
+      background: #000; flex-grow: 1; aspect-ratio: 4 / 3;
+      border-radius: 12px; display: flex; align-items: center; justify-content: center;
+      border: 4px solid #000; position: relative; overflow: hidden;
+    }
+
+    /* Partículas */
+    .particula {
+      position: fixed; width: 30px; height: 30px;
+      background-image: url('https://i.imgur.com/4NZ6uLY.png');
+      background-size: cover; pointer-events: none; z-index: -1;
+      animation: caer linear infinite;
+    }
+    @keyframes caer { from { transform: translateY(110vh); } to { transform: translateY(-10vh); } }
   </style>
 </head>
+
 <body>
+
   <h1>🎮 Héctor Patricio Los Juegos</h1>
+
   <div class="menu">
     <button class="juego-btn" onclick="lanzar('minejamin')">⛏️ Minejamin</button>
     <button class="juego-btn" onclick="lanzar('papa')">👨 Papá del Seba</button>
     <button class="juego-btn" onclick="lanzar('pvz')">🧟 Plants vs Zombies</button>
   </div>
-  <div id="area-juego"></div>
+
+  <div id="area-juego">
+    <p>¡Elige un juego para activar el Arcade!</p>
+  </div>
 
   <script>
     function lanzar(id) {
@@ -35,31 +78,50 @@
       area.innerHTML = `
         <div class="arcade-frame">
           <div class="sidebar">
-            <div class="bot"></div>
-            <div class="bot" style="background:#4ecca3"></div>
-            <div class="bot" style="background:#fca311"></div>
+            <div class="bot-r"></div>
+            <div class="bot-v"></div>
+            <div class="bot-a"></div>
           </div>
           <div class="game-screen" id="display"></div>
         </div>`;
-      
+
       const display = document.getElementById("display");
+
       if (id === "pvz") {
         const ruffle = window.RufflePlayer.newest();
         const player = ruffle.createPlayer();
         display.appendChild(player);
         player.style.width = "100%";
         player.style.height = "100%";
-        
-        // USAMOS EL ARCHIVO DE 6MB
-        player.load("resources.swf").catch(e => {
-          console.error(e);
-          // Respaldo por si el archivo en GitHub falla
+
+        // LOGICA DE CARGA PLAN B
+        // Intentamos cargar tu archivo de 6MB primero
+        player.load({
+            url: "resources.swf",
+            allowScriptAccess: true,
+            backgroundColor: "#000000"
+        }).catch((err) => {
+          console.warn("Fallo local, activando Respaldo Externo...");
+          // Si falla, cargamos esta versión que SIEMPRE funciona
           player.load("https://archive.org/download/pvz_web/pvz_web.swf");
         });
-      } else {
-        display.innerHTML = `<h2>Cargando ${id}...</h2>`;
+
+      } else if (id === "minejamin") {
+        display.innerHTML = `<h2 style="color:var(--primary)">MINEJAMIN</h2><button class="juego-btn">PICAR!</button>`;
+      } else if (id === "papa") {
+        display.innerHTML = `<button class="juego-btn" style="position:absolute" onmouseover="this.style.left=Math.random()*80+'%';this.style.top=Math.random()*80+'%'">ATRÁPALO!</button>`;
       }
     }
+
+    // Lluvia de bocetos
+    setInterval(() => {
+      const p = document.createElement("div");
+      p.className = "particula";
+      p.style.left = Math.random() * 100 + "vw";
+      p.style.animationDuration = (Math.random() * 3 + 4) + "s";
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 7000);
+    }, 600);
   </script>
 </body>
 </html>
