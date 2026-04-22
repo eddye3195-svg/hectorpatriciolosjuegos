@@ -2,7 +2,6 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Héctor Patricio Los Juegos</title>
   
   <script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
@@ -10,15 +9,13 @@
   <style>
     :root {
       --primary: #00ffcc;
-      --accent: #ff00cc;
-      --dark-panel: #1a1a2e;
-      --arcade-border: #222;
+      --dark-arcade: #1a1a2e;
     }
 
     body {
       margin: 0;
       padding: 0;
-      font-family: 'Arial Black', Gadget, sans-serif;
+      font-family: 'Arial Black', sans-serif;
       background: linear-gradient(270deg, #ff00cc, #3333ff, #00ffcc);
       background-size: 600% 600%;
       animation: fondoAnimado 15s ease infinite;
@@ -34,67 +31,36 @@
       100% {background-position: 0% 50%;}
     }
 
-    h1 {
-      margin-top: 20px;
-      font-size: 48px;
-      text-shadow: 5px 5px 0px var(--dark-panel);
-      letter-spacing: -1px;
-    }
+    h1 { margin-top: 20px; font-size: 45px; text-shadow: 4px 4px 0px #000; }
 
-    /* Menú Superior */
-    .menu {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      margin: 20px auto;
-      flex-wrap: wrap;
-    }
+    .menu { display: flex; justify-content: center; gap: 15px; margin: 20px; }
 
     .juego-btn {
-      background: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.2);
       border: 3px solid white;
       border-radius: 15px;
       padding: 12px 25px;
       cursor: pointer;
-      transition: all 0.2s;
-      backdrop-filter: blur(10px);
-      font-weight: bold;
       color: white;
-      font-size: 18px;
+      font-weight: bold;
+      transition: 0.3s;
     }
 
-    .juego-btn:hover {
-      transform: scale(1.1);
-      background: var(--primary);
-      color: black;
-      border-color: black;
-    }
+    .juego-btn:hover { background: var(--primary); color: black; transform: scale(1.1); }
 
     /* CONTENEDOR ARCADE GIGANTE */
-    #area-juego {
-      margin: 20px auto;
-      display: flex;
-      justify-content: center;
-      padding-bottom: 50px;
-    }
+    #area-juego { margin: 20px auto; display: flex; justify-content: center; }
 
-    .arcade-container {
+    .arcade-frame {
       display: flex;
-      background: var(--dark-panel);
+      background: var(--dark-arcade);
       padding: 25px;
       border-radius: 30px;
-      border: 8px solid var(--arcade-border);
-      box-shadow: 0 30px 100px rgba(0,0,0,0.7);
-      animation: zoomIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      border: 8px solid #222;
+      box-shadow: 0 30px 100px rgba(0,0,0,0.8);
     }
 
-    @keyframes zoomIn {
-      from { opacity: 0; transform: scale(0.8); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
-    /* Panel Lateral estilo ESPN */
-    .arcade-sidebar {
+    .sidebar {
       width: 100px;
       background: #0f3460;
       border-radius: 20px;
@@ -104,72 +70,37 @@
       align-items: center;
       padding: 30px 0;
       gap: 20px;
-      border-right: 4px solid rgba(0,0,0,0.3);
     }
 
-    .bot-rojo { width: 50px; height: 50px; background: #e94560; border-radius: 50%; box-shadow: inset -5px -5px 0 rgba(0,0,0,0.4), 0 5px 10px rgba(0,0,0,0.5); }
-    .bot-verde { width: 45px; height: 45px; background: #4ecca3; border-radius: 10px; box-shadow: inset -4px -4px 0 rgba(0,0,0,0.4); }
-    .bot-naranja { width: 45px; height: 45px; background: #fca311; border-radius: 10px; box-shadow: inset -4px -4px 0 rgba(0,0,0,0.4); }
+    .btn-red { width: 50px; height: 50px; background: #e94560; border-radius: 50%; box-shadow: inset -5px -5px 0 rgba(0,0,0,0.4); }
+    .btn-green { width: 45px; height: 45px; background: #4ecca3; border-radius: 10px; }
+    .btn-orange { width: 45px; height: 45px; background: #fca311; border-radius: 10px; }
     
     .d-pad {
-      width: 70px;
-      height: 70px;
-      background: #333;
-      margin-top: auto;
+      width: 70px; height: 70px; background: #333; margin-top: auto;
       clip-path: polygon(35% 0%, 65% 0%, 65% 35%, 100% 35%, 100% 65%, 65% 65%, 65% 100%, 35% 100%, 35% 65%, 0% 65%, 0% 35%, 35% 35%);
-      box-shadow: 0 5px 0 #000;
     }
 
-    /* Pantalla de Juego - AHORA MÁS GRANDE */
+    /* PANTALLA GIGANTE */
     .game-screen {
       background: #000;
-      width: 900px; /* Aumentado */
-      height: 700px; /* Aumentado */
+      width: 950px; 
+      height: 720px; 
       border-radius: 15px;
-      overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
-      border: 4px solid #000;
+      border: 5px solid #000;
     }
 
-    #contenedor-ruffle {
-      width: 100%;
-      height: 100%;
-    }
-
-    /* Partículas de dibujos */
+    /* Partículas */
     .particula {
-      position: fixed;
-      background-size: cover;
-      pointer-events: none;
-      z-index: -1;
-      opacity: 0.5;
-      animation: lluvia linear infinite;
+      position: fixed; width: 35px; height: 35px;
+      background-image: url('https://i.imgur.com/4NZ6uLY.png');
+      background-size: cover; pointer-events: none; z-index: -1;
+      animation: caer linear infinite;
     }
-
-    @keyframes lluvia {
-      from { transform: translateY(110vh) rotate(0deg); }
-      to { transform: translateY(-20vh) rotate(360deg); }
-    }
-
-    /* Botón Música */
-    .musica-ctrl {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-    }
-
-    .btn-audio {
-      background: var(--primary);
-      color: black;
-      border: none;
-      padding: 15px 25px;
-      border-radius: 50px;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 5px 20px rgba(0,255,204,0.4);
-    }
+    @keyframes caer { from { transform: translateY(110vh); } to { transform: translateY(-10vh); } }
   </style>
 </head>
 
@@ -177,97 +108,66 @@
 
   <h1>🎮 Héctor Patricio Los Juegos</h1>
 
-  <audio id="musicaFondo" loop>
-    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
-  </audio>
-
   <div class="menu">
-    <button class="juego-btn" onclick="cargarJuego('minejamin')">⛏️ Minejamin</button>
-    <button class="juego-btn" onclick="cargarJuego('papa')">👨 Papá del Seba</button>
-    <button class="juego-btn" onclick="cargarJuego('pvz')">🧟 Plants vs Zombies</button>
+    <button class="juego-btn" onclick="lanzar('minejamin')">⛏️ Minejamin</button>
+    <button class="juego-btn" onclick="lanzar('papa')">👨 Papá del Seba</button>
+    <button class="juego-btn" onclick="lanzar('pvz')">🧟 Plants vs Zombies</button>
   </div>
 
   <div id="area-juego">
-    <div style="background: rgba(0,0,0,0.5); padding: 40px; border-radius: 20px;">
-      <h2>¡Listo para jugar!</h2>
-      <p>Selecciona un juego para cargar la interfaz arcade.</p>
-    </div>
-  </div>
-
-  <div class="musica-ctrl">
-    <button class="btn-audio" onclick="controlMusica()" id="btnMusica">🎵 Play Música</button>
+    <p>¡Elige un juego para empezar!</p>
   </div>
 
   <script>
-    const playerMusica = document.getElementById("musicaFondo");
-    const btnMusica = document.getElementById("btnMusica");
-    let sonando = false;
-
-    function controlMusica() {
-      if (sonando) {
-        playerMusica.pause();
-        btnMusica.innerText = "🎵 Play Música";
-      } else {
-        playerMusica.play();
-        btnMusica.innerText = "⏸️ Pausar";
-      }
-      sonando = !sonando;
-    }
-
-    function cargarJuego(id) {
-      if (!sonando) controlMusica();
+    function lanzar(id) {
       const area = document.getElementById("area-juego");
 
-      // Estructura Arcade
-      let interfaz = `
-        <div class="arcade-container">
-          <div class="arcade-sidebar">
-            <div class="bot-rojo"></div>
-            <div class="bot-verde"></div>
-            <div class="bot-naranja"></div>
+      area.innerHTML = `
+        <div class="arcade-frame">
+          <div class="sidebar">
+            <div class="btn-red"></div>
+            <div class="btn-green"></div>
+            <div class="btn-orange"></div>
             <div class="d-pad"></div>
           </div>
-          <div class="game-screen" id="contenedor-ruffle">
-      `;
+          <div class="game-screen" id="display"></div>
+        </div>`;
 
-      if (id === "minejamin") {
-        interfaz += `<div style="text-align:center"><h2>MINEJAMIN</h2><h1 id="p">0</h1><button class="juego-btn" onclick="document.getElementById('p').innerText++">PICAR!</button></div>`;
-      } else if (id === "papa") {
-        interfaz += `<button class="juego-btn" style="position:absolute" onmouseover="this.style.left=Math.random()*80+'%';this.style.top=Math.random()*80+'%'">ATRÁPALO!</button>`;
-      } else if (id === "pvz") {
-        interfaz += ``; // Ruffle se cargará aquí
-      }
-
-      interfaz += `</div></div>`;
-      area.innerHTML = interfaz;
+      const display = document.getElementById("display");
 
       if (id === "pvz") {
         const ruffle = window.RufflePlayer.newest();
         const player = ruffle.createPlayer();
-        const container = document.getElementById("contenedor-ruffle");
-        container.appendChild(player);
+        display.appendChild(player);
+        player.style.width = "100%";
+        player.style.height = "100%";
 
-        // INTENTO DE CARGA: Primero tu archivo, si falla, el de respaldo.
+        // INTENTO DE CARGA DOBLE
+        // Primero intenta tu archivo, si falla (error 404 o corrupto), carga el externo
         player.load("pvz.swf").catch(() => {
-          console.log("Archivo local no válido, intentando respaldo...");
-          // Este link es una versión web estable de PvZ
-          player.load("https://archive.org/download/plants-vs.-zombies-web-version-swf-content-20210226-t-143211-z-001/Plants%20vs.%20Zombies%20-%20Web%20Version%20SWF%20Content_20210226_T_143211_Z_001.swf");
+          console.warn("Archivo local falló, cargando respaldo seguro...");
+          player.load("https://archive.org/download/pvz_web/pvz_web.swf");
         });
+        
+        // Si el tuyo sigue dando error de "Archivo no válido", usa esta línea directamente:
+        // player.load("https://archive.org/download/pvz_web/pvz_web.swf");
+
+      } else if (id === "minejamin") {
+        display.innerHTML = `<h2>⛏️ MINEJAMIN GIGANTE</h2><button class="juego-btn">MINAR!</button>`;
+      } else if (id === "papa") {
+        display.innerHTML = `<button class="juego-btn" style="position:absolute" onmouseover="this.style.left=Math.random()*80+'%';this.style.top=Math.random()*80+'%'">ATRÁPALO!</button>`;
       }
     }
 
-    // Lluvia de partículas (Tus bocetos)
+    // Lluvia de bocetos
     setInterval(() => {
       const p = document.createElement("div");
       p.className = "particula";
-      p.style.backgroundImage = "url('https://i.imgur.com/4NZ6uLY.png')";
       p.style.left = Math.random() * 100 + "vw";
-      const size = Math.random() * 30 + 25;
-      p.style.width = size + "px"; p.style.height = size + "px";
-      p.style.animationDuration = (Math.random() * 4 + 4) + "s";
+      p.style.animationDuration = (Math.random() * 3 + 4) + "s";
       document.body.appendChild(p);
-      setTimeout(() => p.remove(), 8000);
-    }, 500);
+      setTimeout(() => p.remove(), 7000);
+    }, 600);
   </script>
 </body>
 </html>
