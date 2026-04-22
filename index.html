@@ -18,6 +18,8 @@
       padding: 12px 25px; cursor: pointer; color: white; font-weight: bold; transition: 0.3s;
     }
     .juego-btn:hover { background: #00ffcc; color: black; transform: scale(1.1); }
+    
+    /* Contenedor Arcade estilo ESPN */
     #area-juego { margin: 20px auto; display: flex; justify-content: center; }
     .arcade-frame {
       display: flex; background: #1a1a2e; padding: 20px; border-radius: 30px;
@@ -28,6 +30,8 @@
       display: flex; flex-direction: column; align-items: center; padding: 25px 0; gap: 20px;
     }
     .bot { width: 45px; height: 45px; border-radius: 50%; background: #e94560; box-shadow: inset -4px -4px 0 rgba(0,0,0,0.3); }
+    
+    /* Pantalla Gigante */
     .game-screen {
       background: #000; width: 900px; height: 650px; border-radius: 15px;
       display: flex; align-items: center; justify-content: center; overflow: hidden; border: 4px solid #000;
@@ -64,8 +68,9 @@
         display.appendChild(player);
         player.style.width = "100%";
         player.style.height = "100%";
-        // ESTE ENLACE CARGA EL JUEGO REAL (No depende de tu GitHub)
-        player.load("https://archive.org/download/pvz_web/pvz_web.swf");
+        
+        // CARGA DIRECTA DESDE EL SERVIDOR QUE FUNCIONA
+        player.load("https://ia804705.us.archive.org/27/items/pvz_web/pvz_web.swf");
       } else if (id === 'minejamin') {
         display.innerHTML = `<h2>⛏️ MINEJAMIN GIGANTE</h2>`;
       } else {
