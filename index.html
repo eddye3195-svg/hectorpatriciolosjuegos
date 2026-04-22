@@ -1,50 +1,93 @@
-function lanzar(id) {
-      const area = document.getElementById("area-juego");
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Héctor Patricio Los Juegos</title>
+  <script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
+  <style>
+    body {
+      margin: 0; padding: 0; font-family: 'Arial Black', sans-serif;
+      background: linear-gradient(270deg, #ff00cc, #3333ff, #00ffcc);
+      background-size: 600% 600%; animation: fondo 15s ease infinite;
+      color: white; text-align: center; overflow: hidden;
+    }
+    @keyframes fondo { 0% {background-position: 0% 50%;} 50% {background-position: 100% 50%;} 100% {background-position: 0% 50%;} }
+    .menu { display: flex; justify-content: center; gap: 15px; margin: 20px; }
+    .juego-btn {
+      background: rgba(255, 255, 255, 0.2); border: 3px solid white; border-radius: 15px;
+      padding: 12px 25px; cursor: pointer; color: white; font-weight: bold; transition: 0.3s;
+    }
+    .juego-btn:hover { background: #00ffcc; color: black; transform: scale(1.1); }
+    #area-juego { margin: 20px auto; display: flex; justify-content: center; }
+    .arcade-frame {
+      display: flex; background: #1a1a2e; padding: 20px; border-radius: 30px;
+      border: 8px solid #222; box-shadow: 0 30px 100px rgba(0,0,0,0.8);
+    }
+    .sidebar {
+      width: 80px; background: #0f3460; border-radius: 20px; margin-right: 15px;
+      display: flex; flex-direction: column; align-items: center; padding: 25px 0; gap: 20px;
+    }
+    .bot { width: 45px; height: 45px; border-radius: 50%; background: #e94560; }
+    .game-screen {
+      background: #000; width: 900px; height: 600px; border-radius: 15px;
+      display: flex; align-items: center; justify-content: center; overflow: hidden; border: 4px solid #000;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎮 Héctor Patricio Los Juegos</h1>
+  <div class="menu">
+    <button class="juego-btn" onclick="lanzar('minejamin')">⛏️ Minejamin</button>
+    <button class="juego-btn" onclick="lanzar('papa')">👨 Papá del Seba</button>
+    <button class="juego-btn" onclick="lanzar('pvz')">🧟 Plants vs Zombies</button>
+  </div>
+  <div id="area-juego"></div>
 
+  <script>
+    function lanzar(id) {
+      const area = document.getElementById("area-juego");
       area.innerHTML = `
         <div class="arcade-frame">
           <div class="sidebar">
-            <div class="btn-red"></div>
-            <div class="btn-green"></div>
-            <div class="btn-orange"></div>
-            <div class="d-pad"></div>
+            <div class="bot"></div>
+            <div class="bot" style="background:#4ecca3"></div>
+            <div class="bot" style="background:#fca311"></div>
           </div>
           <div class="game-screen" id="display"></div>
         </div>`;
-
+      
       const display = document.getElementById("display");
-
-      if (id === "pvz") {
+      
+      if (id === 'pvz') {
         const ruffle = window.RufflePlayer.newest();
         const player = ruffle.createPlayer();
         display.appendChild(player);
         player.style.width = "100%";
         player.style.height = "100%";
 
-        // CONFIGURACIÓN DE SEGURIDAD PARA EVITAR EL BLOQUEO
+        // Configuración para que cargue sin pedir abrir en pestaña nueva
         player.config = {
-            "allowScriptAccess": true,
-            "autoplay": "on",
-            "unmuteOverlay": "hidden",
-            "letterbox": "on",
-            "warnOnUnsupportedContent": false
+          "allowScriptAccess": true,
+          "autoplay": "on",
+          "unmuteOverlay": "hidden"
         };
 
-        // Usa la URL que copiaste de 'main.swf'
-        const urlCopiada = "Phttps://cdn.flasharch.com/uploads/archived/2021/02/03/e2dda58d6d038c2886d521cfd8fcd134/main.swf"; 
+        // Tu enlace directo verificado de FlashArch
+        const urlFinal = "https://cdn.flasharch.com/uploads/archived/2021/02/03/e2dda58d6d038c2886d521cfd8fcd134/main.swf";
         
         player.load({
-            url: urlCopiada,
-            // Esto fuerza a Ruffle a intentar cargar aunque sea de otro sitio
-            allowScriptAccess: true 
-        }).catch((e) => {
-          console.warn("Fallo el link, usando respaldo...");
+          url: urlFinal,
+          allowScriptAccess: true
+        }).catch(e => {
+          console.warn("Fallo el cargador de FlashArch, intentando respaldo...");
           player.load("https://ia804705.us.archive.org/27/items/pvz_web/pvz_web.swf");
         });
-
-      } else if (id === "minejamin") {
-        display.innerHTML = `<h2 style="color:var(--primary)">⛏️ MINEJAMIN GIGANTE</h2>`;
-      } else if (id === "papa") {
-        display.innerHTML = `<button class="juego-btn" style="position:absolute" onmouseover="this.style.left=Math.random()*80+'%';this.style.top=Math.random()*80+'%'">ATRÁPALO!</button>`;
+      } else if (id === 'minejamin') {
+        display.innerHTML = "<h2>⛏️ MINEJAMIN GIGANTE</h2>";
+      } else {
+        display.innerHTML = "<h2>ATRÁPALO!</h2>";
       }
     }
+  </script>
+</body>
+</html>
